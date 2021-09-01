@@ -13,6 +13,8 @@ dirname=''
 root = tkinter.Tk()
 root.title("PDF OCR Tool")
 
+languages=tkinter.StringVar()
+
 tkinter.Label(root, text="Choose input PDF file: ").grid(row=0)
 def filebrowsefunc():
     global filename
@@ -32,6 +34,11 @@ dirbrowsebutton = tkinter.Button(root, text="Browse", command=dirbrowsefunc)
 dirbrowsebutton.grid(row=1, column=1)
 dirpathlabel = tkinter.Label(root)
 dirpathlabel.grid(row=1, column=2)
+
+tkinter.Label(root, text="List language codes for OCR separated by commas (corresponding traineddata has to be already installed)").grid(row=3)
+languageEntry = tkinter.Entry(root, textvariable=languages, bd=5)
+languageEntry.grid(row=3, column=1)
+tkinter.Label(root, text="(Leave empty for English-only OCR, mention English if combined with other languages)").grid(row=4)
 
 def runTool():
     inputPath = filename
@@ -54,24 +61,33 @@ def runTool():
         print("Converted all pages to images")
 
         pdfPathWithoutOCR = "temp/withoutOCR.pdf"
-        combineToPdf(paths, pdfPathWithoutOCR)
         print("Creating PDF without OCR...")
+        combineToPdf(paths, pdfPathWithoutOCR)
         print("PDF without OCR created!")
 
-        pdfOutputPath = dirname + "/paper.pdf"
-        subprocess.run(["ocrmypdf", pdfPathWithoutOCR, pdfOutputPath])
+        languageListRaw = languages.get().split(",")
+        languageList=[]
+        for language in languageListRaw:
+            if(language.strip()):
+                languageList.append("-l")
+                languageList.append(language.strip())
 
+        pdfOutputPath = dirname + "/paper.pdf"
+
+        subprocess.run(["ocrmypdf", pdfPathWithoutOCR, pdfOutputPath] + languageList).check_returncode()
+
+        print("File converted and saved successfully!")
         statuslabel.config(text="File converted and saved successfully!", bg="green")
     except Exception as err:
         print("Failed: {0}".format(err))
-        statuslabel.config(text="Failed: {0}".format(err), bg="red")
+        statuslabel.config(text="Failed: {0}\nCheck console for more error information".format(err), bg="red")
     finally:
         rmtree("temp")
 
 submitbutton = tkinter.Button(root, text="Submit and convert", command=runTool)
-submitbutton.grid(row=3, column=1)
+submitbutton.grid(row=6, column=1)
 statuslabel = tkinter.Label(root)
-statuslabel.grid(row=4, column=1)
+statuslabel.grid(row=7, column=1)
 
 if __name__ == "__main__":
     root.mainloop()

@@ -40,6 +40,19 @@ Conversion takes time and the progress is shown in the console that opens alongs
 
 In case of errors, the message is printed in the UI with a red background. Contact the maintainers with the error message for resolution.
 
+## Additional Language Support
+
+PDF OCR Tool is based on Tesseract OCR engine. Tesseract supports a wide range of languages (you can check the list [here](https://tesseract-ocr.github.io/tessdoc/Data-Files-in-different-versions.html))
+
+PDF OCR Tool installs only English language by default. For adding support for languages other than English, download the respective language pack (.traineddata file) from [here](https://github.com/tesseract-ocr/tessdata/) and place it in **C:\\Program Files\\Tesseract-OCR\\tessdata** (or wherever Tesseract OCR is installed).
+
+To perform OCR on a PDF with a language other than English, specify the language(s) to be used for OCR during run time as a comma separated list.
+
+## Changelog
+v1.0.0 - Initial release, support English OCR
+
+v1.1.0 - Added language support via arguments
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
